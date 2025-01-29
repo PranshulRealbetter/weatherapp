@@ -5,7 +5,7 @@ import requests
 import json
 import redis
 from django.core.cache import cache
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 def redirecturl(**kwargs):
     url=kwargs.get('url')
@@ -36,7 +36,7 @@ class ApiCall:
         self.query = kwargs.get('query')
 
     def get_data(self):
-        # Instead of using postcodes.io, we can directly use OpenWeatherMap with city name
+       
         cached_data=cache.get(self.query)
 
         if cached_data:
@@ -49,9 +49,10 @@ class ApiCall:
         if r.status_code == 200:
             data = r.json()
             if 'list' in data:
-                # Weather data is in 'list', returning the daily forecast
-                timeout=timedelta(days=1).total_seconds()
+                
+                now = datetime.now()
+                midnight = (now + timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
+                timeout = (midnight - now).total_seconds()
                 cache.set(self.query, json.dumps(data['list']),timeout=timeout) 
-                return data['list']  # Modify this part depending on what data you want to show
-
+                return data['list']  
         return None
