@@ -7,7 +7,7 @@ import redis
 from django.core.cache import cache
 from datetime import timedelta, datetime
 
-def redirecturl(**kwargs):
+def build_redirect_url(**kwargs):
     url=kwargs.get('url')
     params=kwargs.get('params')
     response=redirect(url)
@@ -16,26 +16,11 @@ def redirecturl(**kwargs):
         response['Location'] += '?' + query_string
     return response
 
-'''class ApiCall:
-    def __init__(self,*args,**kwargs):
-        self.query=kwargs.get('query')
-    def get_data(self):
-        full_url = f'https://api.postcodes.io/postcodes/{self.query}'
-        r=requests.get(full_url)
-        if r.status_code==200:
-            result=r.json()['result']
-            lat=result['latitude']
-            lon=result['longitude']
-            url=f'api.openweathermap.org/data/2.5/forecast?q={self.query}&appid={settings.API_key}'
-            r=requests.get(url)
-            if r.status_code==200:
-                return r.json()['daily']
-        return None '''
-class ApiCall:
+class WeatherDataFetcher:
     def __init__(self, *args, **kwargs):
         self.query = kwargs.get('query')
 
-    def get_data(self):
+    def fetch_data(self):
        
         cached_data=cache.get(self.query)
 

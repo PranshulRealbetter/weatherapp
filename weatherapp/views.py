@@ -1,34 +1,23 @@
 from django.shortcuts import render, reverse, redirect
 from django.conf import settings
-from .serializers import ForecastSerializer
+from .serializers import WeatherForecastSerializer
 
-from .api import ApiCall,redirecturl
+from .api import WeatherDataFetcher,build_redirect_url
 
-def index(request):
+def home(request):
     if request.method=='POST':
         query=request.POST.get('query',None)
         if query:
-            return redirecturl(url='weatherapp:results',params={'query':query})
+            return build_redirect_url(url='weatherapp:results',params={'query':query})
     return render(request, 'index.html',{})
 
 def results(request):
     query= request.GET.get('query',None)
     if query:
-        results=ApiCall(query=query).get_data()
+        results=WeatherDataFetcher(query=query).fetch_data()
         if results:
-            serializer=ForecastSerializer(results,many=True)
+            serializer=WeatherForecastSerializer(results,many=True)
             simple_results=serializer.data
-           # simple_results=[]
-           # for forecast in results:
-           #     simple_results.append({
-           #         'date':forecast['dt'],
-           #         'temperature':forecast['main']['temp'],
-           #         'feels_like':forecast['main']['feels_like'],
-           #         'humidity': forecast['main']['humidity'],
-           #         'weather': forecast['weather'][0]['description'],
-           #         'wind_speed': forecast['wind']['speed'],
-           #     })
-
 
             context={
                 'results':simple_results,

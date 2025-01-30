@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-class ForecastSerializer(serializers.Serializer):
+class WeatherForecastSerializer(serializers.Serializer):
     date = serializers.IntegerField(source='dt')
     temperature=serializers.FloatField(source='main.temp')
     feels_like=serializers.FloatField(source='main.feels_like')
