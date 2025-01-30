@@ -1,8 +1,8 @@
 from django.shortcuts import render, reverse, redirect
 from django.conf import settings
-from .serializers import WeatherForecastSerializer
+from weatherapp.serializers import WeatherForecastSerializer
 
-from .api import WeatherDataFetcher, build_redirect_url
+from weatherapp.api import WeatherDataFetcher, build_redirect_url
 
 
 def home(request):
@@ -29,6 +29,3 @@ def results(request):
             return render(request, "results.html", context)
 
     return redirect(reverse("weatherapp:home"))
-
-
-# Create your views here.
