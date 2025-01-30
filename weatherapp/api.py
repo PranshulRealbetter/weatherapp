@@ -3,56 +3,40 @@ from django.shortcuts import redirect
 from urllib.parse import urlencode
 import requests
 import json
-import redis
 from django.core.cache import cache
 from datetime import timedelta, datetime
 
-def redirecturl(**kwargs):
-    url=kwargs.get('url')
-    params=kwargs.get('params')
-    response=redirect(url)
+def build_redirect_url(**kwargs):
+    url = kwargs.get('url')
+    params = kwargs.get('params')
+    response = redirect(url)
     if params:
-        query_string=urlencode(params)
+        query_string = urlencode(params)
         response['Location'] += '?' + query_string
     return response
 
-'''class ApiCall:
-    def __init__(self,*args,**kwargs):
-        self.query=kwargs.get('query')
-    def get_data(self):
-        full_url = f'https://api.postcodes.io/postcodes/{self.query}'
-        r=requests.get(full_url)
-        if r.status_code==200:
-            result=r.json()['result']
-            lat=result['latitude']
-            lon=result['longitude']
-            url=f'api.openweathermap.org/data/2.5/forecast?q={self.query}&appid={settings.API_key}'
-            r=requests.get(url)
-            if r.status_code==200:
-                return r.json()['daily']
-        return None '''
-class ApiCall:
-    def __init__(self, *args, **kwargs):
-        self.query = kwargs.get('query')
+class WeatherDataFetcher:
+    def __init__(self, city_name, *args, **kwargs):
+        self.city_name = city_name
 
-    def get_data(self):
-       
-        cached_data=cache.get(self.query)
+    def fetch_data(self):
+        cached_data = cache.get(self.city_name)
 
         if cached_data:
-            print('cache hit')
-           # print(json.loads(cached_data))
+            print('Cache hit')
             return json.loads(cached_data)
-        print('cache miss, making api call again')
-        url = f'https://api.openweathermap.org/data/2.5/forecast?q={self.query}&appid={settings.API_KEY}'
-        r = requests.get(url)
-        if r.status_code == 200:
-            data = r.json()
+        
+        print('Cache miss, making API call...')
+        url = f'https://api.openweathermap.org/data/2.5/forecast?q={self.city_name}&appid={settings.API_KEY}'
+        response = requests.get(url)
+
+        if response.status_code == 200:
+            data = response.json()
             if 'list' in data:
-                
                 now = datetime.now()
                 midnight = (now + timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
                 timeout = (midnight - now).total_seconds()
-                cache.set(self.query, json.dumps(data['list']),timeout=timeout) 
-                return data['list']  
+                cache.set(self.city_name, json.dumps(data['list']), timeout=timeout)
+                return data['list']
+        
         return None
