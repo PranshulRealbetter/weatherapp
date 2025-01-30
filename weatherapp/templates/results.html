@@ -55,14 +55,14 @@
   <body>
     <div class="container">
       <h2>Weather Results for "{{ query }}"</h2>
-        {% if results %}
+      {% if results %}
       <table>
         <thead>
           <tr>
             <th>Date</th>
             <th>Temperature (°C)</th>
             <th>Feels Like (°C)</th>
-            <th>Humidity (%)</th>       
+            <th>Humidity (%)</th>
             <th>Weather</th>
             <th>Wind Speed (m/s)</th>
           </tr>
@@ -70,13 +70,12 @@
         <tbody>
           {% for result in results %}
           <tr>
-        
-                <td>{{ result.date }}</td>
-                <td>{{ result.temperature }}</td>
-                <td>{{ result.feels_like}}</td>
-                <td>{{ result.humidity }}</td>
-                <td>{{ result.weather }}</td>
-                <td>{{ result.wind_speed }}</td>
+            <td>{{ result.date }}</td>
+            <td>{{ result.temperature }}</td>
+            <td>{{ result.feels_like}}</td>
+            <td>{{ result.humidity }}</td>
+            <td>{{ result.weather }}</td>
+            <td>{{ result.wind_speed }}</td>
           </tr>
           {% endfor %}
         </tbody>

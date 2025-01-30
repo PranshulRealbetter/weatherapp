@@ -1,5 +1,6 @@
 from django.shortcuts import render, reverse, redirect
 from django.conf import settings
+from .serializers import ForecastSerializer
 
 from .api import ApiCall,redirecturl
 
@@ -15,16 +16,18 @@ def results(request):
     if query:
         results=ApiCall(query=query).get_data()
         if results:
-            simple_results=[]
-            for forecast in results:
-                simple_results.append({
-                    'date':forecast['dt'],
-                    'temperature':forecast['main']['temp'],
-                    'feels_like':forecast['main']['feels_like'],
-                    'humidity': forecast['main']['humidity'],
-                    'weather': forecast['weather'][0]['description'],
-                    'wind_speed': forecast['wind']['speed'],
-                })
+            serializer=ForecastSerializer(results,many=True)
+            simple_results=serializer.data
+           # simple_results=[]
+           # for forecast in results:
+           #     simple_results.append({
+           #         'date':forecast['dt'],
+           #         'temperature':forecast['main']['temp'],
+           #         'feels_like':forecast['main']['feels_like'],
+           #         'humidity': forecast['main']['humidity'],
+           #         'weather': forecast['weather'][0]['description'],
+           #         'wind_speed': forecast['wind']['speed'],
+           #     })
 
 
             context={

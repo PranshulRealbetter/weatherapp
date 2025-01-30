@@ -41,7 +41,7 @@ class ApiCall:
 
         if cached_data:
             print('cache hit')
-            print(json.loads(cached_data))
+           # print(json.loads(cached_data))
             return json.loads(cached_data)
         print('cache miss, making api call again')
         url = f'https://api.openweathermap.org/data/2.5/forecast?q={self.query}&appid={settings.API_KEY}'
