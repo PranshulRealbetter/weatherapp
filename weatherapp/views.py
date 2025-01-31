@@ -1,7 +1,5 @@
 from django.shortcuts import render, reverse, redirect
 from django.conf import settings
-from weatherapp.serializers import WeatherForecastSerializer
-
 from weatherapp.api import WeatherDataFetcher, build_redirect_url
 
 
@@ -18,11 +16,8 @@ def results(request):
     if query:
         results = WeatherDataFetcher(query=query).fetch_data()
         if results:
-            serializer = WeatherForecastSerializer(results, many=True)
-            simple_results = serializer.data
-
             context = {
-                "results": simple_results,
+                "results": results,
                 "query": query,
             }
 

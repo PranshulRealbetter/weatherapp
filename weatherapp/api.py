@@ -8,7 +8,7 @@ from django.core.cache import cache
 from datetime import timedelta, datetime
 from functools import wraps
 import time
-
+from weatherapp.serializers import WeatherForecastSerializer
 
 def timeit(func):
     @wraps(func)
@@ -54,11 +54,13 @@ class WeatherDataFetcher:
         if r.status_code == 200:
             data = r.json()
             if "list" in data:
+                serializer = WeatherForecastSerializer(data["list"], many=True)
+                serialized_data = serializer.data
                 now = datetime.now()
                 midnight = (now + timedelta(days=1)).replace(
                     hour=0, minute=0, second=0, microsecond=0
                 )
                 timeout = (midnight - now).total_seconds()
-                cache.set(self.query, json.dumps(data["list"]), timeout=timeout)
-                return data["list"]
+                cache.set(self.query, json.dumps(serialized_data), timeout=timeout)
+                return serialized_data
         return None
